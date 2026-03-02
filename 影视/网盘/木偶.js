@@ -13,6 +13,13 @@ try {
 // 网站地址(可以通过环境变量配置，支持多个域名用;分割)
 const WEB_SITE_CONFIG = process.env.WEB_SITE_MUOU || "https://www.muou.site;https://www.muou.asia;https://666.666291.xyz;";
 const WEB_SITES = WEB_SITE_CONFIG.split(';').map(url => url.trim()).filter(url => url);
+// 筛选配置
+const FILTERS = process.env.FILTERS_WOGG || "https://xget.xi-xu.me/gh/Silent1566/OmniBox-Spider/raw/refs/heads/main/%E9%85%8D%E7%BD%AE/%E7%AD%9B%E9%80%89/mogg.json";
+// 读取环境变量：支持多个网盘类型，用分号分割
+const DRIVE_TYPE_CONFIG = (process.env.DRIVE_TYPE_CONFIG || "quark;uc").split(';').map(t => t.trim()).filter(t => t);
+// 读取环境变量：线路名称和顺序，用分号分割
+const SOURCE_NAMES_CONFIG = (process.env.SOURCE_NAMES_CONFIG || "本地代理;服务端代理;直连").split(';').map(s => s.trim()).filter(s => s);
+// ==================== 配置区域结束 ====================  
 
 if (WEB_SITES.length === 0) {
   throw new Error("WEB_SITE 配置不能为空");
@@ -77,122 +84,51 @@ function getBaseUrl() {
 /**
  * 筛选配置
  */
-const FILTERS = {
-  "25": [
-    {
-      "key": "area",
-      "name": "地区",
-      "init": "",
-      "value": [
-        { "name": "全部地区", "value": "" },
-        { "name": "中国大陆", "value": "中国大陆" },
-        { "name": "大陆", "value": "大陆" },
-        { "name": "美国", "value": "美国" },
-        { "name": "香港", "value": "香港" },
-        { "name": "韩国", "value": "韩国" },
-        { "name": "英国", "value": "英国" },
-        { "name": "台湾", "value": "台湾" },
-        { "name": "日本", "value": "日本" },
-        { "name": "法国", "value": "法国" },
-        { "name": "意大利", "value": "意大利" },
-        { "name": "德国", "value": "德国" },
-        { "name": "西班牙", "value": "西班牙" },
-        { "name": "泰国", "value": "泰国" },
-        { "name": "其它", "value": "其它" }
-      ]
-    },
-    {
-      "key": "lang",
-      "name": "语言",
-      "init": "",
-      "value": [
-        { "name": "全部语言", "value": "" },
-        { "name": "国语", "value": "国语" },
-        { "name": "英语", "value": "英语" },
-        { "name": "粤语", "value": "粤语" },
-        { "name": "闽南语", "value": "闽南语" },
-        { "name": "韩语", "value": "韩语" },
-        { "name": "日语", "value": "日语" },
-        { "name": "法语", "value": "法语" },
-        { "name": "德语", "value": "德语" },
-        { "name": "其它", "value": "其它" }
-      ]
-    },
-    {
-      "key": "year",
-      "name": "时间",
-      "init": "",
-      "value": [
-        { "name": "全部时间", "value": "" },
-        { "name": "2026", "value": "2026" },
-        { "name": "2025", "value": "2025" },
-        { "name": "2024", "value": "2024" },
-        { "name": "2023", "value": "2023" },
-        { "name": "2022", "value": "2022" },
-        { "name": "2021", "value": "2021" },
-        { "name": "2020", "value": "2020" },
-        { "name": "2019", "value": "2019" },
-        { "name": "2018", "value": "2018" },
-        { "name": "2017", "value": "2017" },
-        { "name": "2016", "value": "2016" },
-        { "name": "2015", "value": "2015" },
-        { "name": "2014", "value": "2014" },
-        { "name": "2013", "value": "2013" },
-        { "name": "2012", "value": "2012" },
-        { "name": "2011", "value": "2011" },
-        { "name": "2010", "value": "2010" }
-      ]
-    },
-    {
-      "key": "letter",
-      "name": "字母",
-      "init": "",
-      "value": [
-        { "name": "全部字母", "value": "" },
-        { "name": "A", "value": "A" },
-        { "name": "B", "value": "B" },
-        { "name": "C", "value": "C" },
-        { "name": "D", "value": "D" },
-        { "name": "E", "value": "E" },
-        { "name": "F", "value": "F" },
-        { "name": "G", "value": "G" },
-        { "name": "H", "value": "H" },
-        { "name": "I", "value": "I" },
-        { "name": "J", "value": "J" },
-        { "name": "K", "value": "K" },
-        { "name": "L", "value": "L" },
-        { "name": "M", "value": "M" },
-        { "name": "N", "value": "N" },
-        { "name": "O", "value": "O" },
-        { "name": "P", "value": "P" },
-        { "name": "Q", "value": "Q" },
-        { "name": "R", "value": "R" },
-        { "name": "S", "value": "S" },
-        { "name": "T", "value": "T" },
-        { "name": "U", "value": "U" },
-        { "name": "V", "value": "V" },
-        { "name": "W", "value": "W" },
-        { "name": "X", "value": "X" },
-        { "name": "Y", "value": "Y" },
-        { "name": "Z", "value": "Z" },
-        { "name": "0-9", "value": "0-9" }
-      ]
-    },
-    {
-      "key": "sort",
-      "name": "排序",
-      "init": "",
-      "value": [
-        { "name": "默认排序", "value": "" },
-        { "name": "人气", "value": "hits" },
-        { "name": "评分", "value": "score" }
-      ]
-    }
-  ],
-  // ... 其他FILTERS配置保持不变
-};
+async function getDynamicFilters() {
+  const config = FILTERS;
+  const defaultFilters = {};
 
-// ==================== 配置区域结束 ====================  
+  if (config) {
+    if (config.startsWith('http')) {
+      try {
+        OmniBox.log("info", `正在从远程链接读取过滤器: ${config}`);
+        const response = await OmniBox.request(config, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json; charset=utf-8"
+          }
+        });
+        if (response.statusCode === 200 && response.body) {
+          const rawFilters = JSON.parse(response.body);
+
+          // 遍历过滤器对象，进行属性映射转换
+          const formattedFilters = {};
+          for (const typeId in rawFilters) {
+            formattedFilters[typeId] = rawFilters[typeId].map(group => ({
+              key: group.key,
+              name: group.n || group.name, // 将 n 转换为 name [1]
+              init: group.init,
+              value: (group.v || group.value || []).map(item => ({
+                name: item.n || item.name, // 将子项的 n 转换为 name [1]
+                value: item.v || item.value // 将子项的 v 转换为 value [1]
+              }))
+            }));
+          }
+          return formattedFilters;
+        }
+      } catch (error) {
+        OmniBox.log("error", `远程过滤器读取失败: ${error.message}`);
+      }
+    } else {
+      try {
+        return JSON.parse(config);
+      } catch (error) {
+        OmniBox.log("error", `解析环境变量 FILTERS_WOGG 失败: ${error.message}`);
+      }
+    }
+  }
+  return defaultFilters;
+}
 
 /**
  * 移除 URL 末尾的斜杠
@@ -382,10 +318,11 @@ async function home(params) {
       OmniBox.log("warn", `从首页提取数据失败: ${error.message}`);
     }
     
+    const currentFilters = await getDynamicFilters();
     return {
       class: classes,
       list: list,
-      filters: FILTERS,
+      filters: currentFilters, // 使用动态获取的过滤器 [1]
     };
   } catch (error) {
     OmniBox.log("error", `获取首页数据失败: ${error.message}`);
@@ -555,7 +492,7 @@ async function detail(params) {
     const $ = cheerio.load(response.body);
 
     // 获取基本信息
-    const vodName = $(".page-title")[0]?.children?.[0]?.data || "";
+    let vodName = $(".page-title")[0]?.children?.[0]?.data || "";
     let vodPic = $($(".mobile-play")).find(".lazyload")[0]?.attribs?.["data-src"] || "";
     if (vodPic && !vodPic.startsWith("http://") && !vodPic.startsWith("https://")) {
       vodPic = baseUrl + vodPic;
@@ -704,13 +641,20 @@ async function detail(params) {
         // ==================== 刮削处理结束 ====================
 
         let sourceNames = [displayName];
-        if (driveInfo.driveType === "quark") {
-          sourceNames = ["本地代理", "服务端代理", "直连"];
-          OmniBox.log("info", `${displayName}支持多线路: ${sourceNames.join(", ")}`);
+        // 读取环境变量：支持多个网盘类型，用分号分割
+        const targetDriveTypes = DRIVE_TYPE_CONFIG;
+        // 读取环境变量：线路名称，用分号分割
+        const configSourceNames = SOURCE_NAMES_CONFIG;
+
+        // 修改判断逻辑：检查当前网盘类型是否在配置列表中 [1]
+        if (targetDriveTypes.includes(driveInfo.driveType)) {
+          sourceNames = [...configSourceNames]; // 使用环境变量定义的线路
+          OmniBox.log("info", `${displayName} 匹配成功，线路设置为: ${sourceNames.join(", ")}`);
 
           if (source === "web") {
+            // 如果是网页端，过滤掉“本地代理”线路 [1]
             sourceNames = sourceNames.filter((name) => name !== "本地代理");
-            OmniBox.log("info", `来源为网页端,已过滤掉"本地代理"线路`);
+            OmniBox.log("info", `来源为网页端，已过滤线路`);
           }
         }
 
